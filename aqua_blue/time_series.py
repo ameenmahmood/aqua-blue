@@ -31,7 +31,7 @@ class TimeSeries:
     def save(self, file: IO, header="", delimiter=","):
         np.savetxt(
             file,
-            np.vstack((self.times, self.dependent_variable.T)).T,
+            np.vstack((self.times.astype('datetime64[D]').astype(float), self.dependent_variable.T)).T
             delimiter=delimiter,
             header=header,
             comments=""
