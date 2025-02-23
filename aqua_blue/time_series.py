@@ -4,7 +4,6 @@ from pathlib import Path
 from dataclasses import dataclass
 import numpy as np
 from datetime import datetime, timedelta
-import pandas as pd
 
 from numpy.typing import NDArray
 
@@ -16,11 +15,7 @@ class TimeSeries:
     times: NDArray
 
     def __post_init__(self):
-        # Convert integer-based time indices to datetime starting from a fixed date
-        start_date = datetime(1970, 1, 1)
-        self.times = np.array([start_date + timedelta(days=t) for t in self.times])
-        
-        timesteps = np.diff(self.times.astype('datetime64[D]').astype(float))
+        timesteps = np.diff(self.times)
 
         if not np.isclose(np.std(timesteps), 0.0):
             raise ValueError("TimeSeries.times must be uniformly spaced")
@@ -31,7 +26,7 @@ class TimeSeries:
     def save(self, file: IO, header="", delimiter=","):
         np.savetxt(
             file,
-            np.vstack((self.times.astype('datetime64[D]').astype(float), self.dependent_variable.T)).T
+            np.vstack((self.times, self.dependent_variable.T)).T, 
             delimiter=delimiter,
             header=header,
             comments=""
