@@ -192,3 +192,6 @@ class TimeSeries:
     def __len__(self):
         
         return len(self.times)
+    
+print("test")
+
