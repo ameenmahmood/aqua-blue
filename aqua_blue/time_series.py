@@ -33,6 +33,7 @@ class TimeSeries:
     times: DatetimeLikeArray
     
     def __post_init__(self):
+        print("test")
         # If List[float | int | datetime] is passed, convert to NDArray, NDArray, or DatetimeLikeArray respectively
         if isinstance(self.times[0], datetime):
             # For some reason, NumPy does not automatically handle datetime object dtypes as np.datetime64.
@@ -193,5 +194,5 @@ class TimeSeries:
         
         return len(self.times)
     
-print("test")
+
 
