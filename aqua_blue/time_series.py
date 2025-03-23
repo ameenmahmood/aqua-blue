@@ -15,7 +15,6 @@ from dateutil import parser
 
 from .datetimelikearray import DatetimeLikeArray, TimeDeltaLike
 
-
 class ShapeChangedWarning(Warning):
     """
     Warning for cases where `TimeSeries.__post_init__` alters the shape of the dependent variable.
