@@ -114,11 +114,30 @@ class TimeSeries:
         Returns:
             TimeSeries: A TimeSeries instance populated by data from the csv file
         """
-        
-        data = np.loadtxt(fp, delimiter=",")
-        times_ = data[:, time_index]
+        # Load the CSV file as strings to handle mixed data types
+        data = np.genfromtxt(fp, delimiter=",", dtype=str, skip_header=1)
+
+        # Extract the time column as strings
+        time_strings = data[:, time_index]
+
+        # Parse the time column into datetime objects
+        def parse_date(date_str):
+            # Try parsing with multiple formats
+            for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%m/%d/%Y", "%Y/%m/%d", "%Y-%m-%dT%H:%M:%S"):
+                try:
+                    return datetime.strptime(date_str, fmt)
+                except ValueError:
+                    continue
+            raise ValueError(f"Date format not recognized: {date_str}")
+
+        times_ = np.array([np.datetime64(parse_date(t)) for t in time_strings])
+
+        # Extract the dependent variable data (all columns except the time column)
+        dependent_variable = data[:, np.arange(data.shape[1]) != time_index].astype(float)
+
+        # Create and return the TimeSeries instance
         return TimeSeries(
-            dependent_variable=np.delete(data, obj=time_index, axis=1), 
+            dependent_variable=dependent_variable,
             times=DatetimeLikeArray.from_array(times_, tz)
         )
 
@@ -193,6 +212,6 @@ class TimeSeries:
     def __len__(self):
         
         return len(self.times)
-    
+
 
 
